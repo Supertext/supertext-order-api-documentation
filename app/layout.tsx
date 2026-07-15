@@ -2,6 +2,8 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import localFont from 'next/font/local'
 import './globals.css'
+import SiteHeader from './components/SiteHeader'
+import SiteFooter from './components/SiteFooter'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -29,7 +31,11 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${inter.variable} ${gintoNord.variable}`}>
-      <body className="bg-backgrounds-backgroundLight">{children}</body>
+      <body className="bg-backgrounds-backgroundLight min-h-screen flex flex-col">
+        <SiteHeader />
+        <div className="flex-1">{children}</div>
+        <SiteFooter />
+      </body>
     </html>
   )
 }
