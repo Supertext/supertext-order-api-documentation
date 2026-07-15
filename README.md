@@ -490,19 +490,24 @@ the translated side so you can map translations onto your original structure.
 
 ### `DocumentType` (in responses)
 
-| Value | Meaning |
-|-------|---------|
-| `Original` | The source document you supplied. |
-| `Final` | The finished translation to download. |
+| Id | Value | Meaning |
+|----|-------|---------|
+| 1 | `Original` | The source document you supplied. |
+| 2 | `Final` | The finished translation to download. |
 
 ### Order status (partial)
 
-Order objects carry a textual `Status` (e.g. `New`, `In progress`, `Quality check`,
-`Completed`). The status-change endpoint uses numeric ids; the commonly used one is:
+Order objects carry a textual `Status` (e.g. `New`, `In progress`, `Quality check`),
+backed by a numeric status id.
 
 | Status id | Meaning |
 |-----------|---------|
+| 8 | **Delivered** — the order is finished. **Poll for this** when waiting for a completed order. |
 | 9 | Collected |
+
+> **Waiting for a finished order:** either supply a `CallbackUrl` (Supertext POSTs the
+> completed order to it), or poll [`GET /api/v1/order/{orderId}`](#get-an-order) until the
+> status reaches **Delivered (8)**, then download the `Final` (2) file(s).
 
 ---
 
