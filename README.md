@@ -485,6 +485,20 @@ the translated side so you can map translations onto your original structure.
 
 *(Other accounts may use different ids — e.g. `6` appears in the sample requests.)*
 
+### `ServiceTypeId`
+
+Legacy service-type selector used by the **[quote](#get-a-quote)** endpoint
+(`POST /api/v1/translation/quote`). Like `OrderTypeConfigurationId`, its values are
+**account-specific**. When creating an order you use `OrderTypeConfigurationId` instead —
+`ServiceTypeId` is not required on the order endpoint.
+
+| Id | Service |
+|----|---------|
+| 46 | Standard |
+
+> These ids can be **client-specific** — confirm the `ServiceTypeId` values available to
+> your account with Supertext.
+
 ### Upload constants (`POST /api/v1/files/files`)
 
 | Field | Value | Meaning |
