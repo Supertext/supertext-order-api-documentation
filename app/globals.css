@@ -1,0 +1,93 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+/*
+ * Theme tokens mirrored from the Supertext web app
+ * (src/layout/global.css @theme) so the copied API-reference
+ * components render with the same palette and fonts.
+ */
+@theme {
+  /* Fonts — vars are provided by next/font in app/layout.tsx */
+  --font-sans: var(--font-inter), sans-serif;
+  --font-heading: var(--font-abc-ginto-nord), sans-serif;
+  --font-body: var(--font-inter), sans-serif;
+
+  /* Primary */
+  --color-primary-default: #003230;
+  --color-primary-lighten: #1a4645;
+  --color-primary-darken: #002d2b;
+  --color-primary-extra-lighten: #335b59;
+
+  /* Secondary */
+  --color-secondary-default: #78ffaf;
+  --color-secondary-lighten: #86ffb7;
+  --color-secondary-extra-lighten: #93ffbf;
+  --color-secondary-darken: #6ce69e;
+
+  /* Accents */
+  --color-accents-brand-accent1: #78ffaf;
+  --color-accents-brand-accent2: #55cdad;
+  --color-accents-gray-accent1: #dfe1df;
+
+  /* Backgrounds */
+  --color-backgrounds-backgroundLight: #ffffff;
+  --color-backgrounds-backgroundDark: #f9f8f6;
+
+  /* Inputs */
+  --color-inputs-background: #f2f2f2;
+  --color-inputs-background2: #e2e2e2;
+
+  /* Buttons */
+  --color-buttons-background: #78ffaf;
+  --color-buttons-color: #003230;
+
+  /* Borders */
+  --color-borders-color: #000000;
+
+  /* Text */
+  --color-text-color: #003230;
+}
+
+html,
+body {
+  overscroll-behavior: none;
+  scroll-padding-top: 70px;
+}
+
+body {
+  background-color: var(--color-backgrounds-backgroundLight);
+  color: var(--color-primary-default);
+  font-family: var(--font-body);
+}
+
+/* ---- API Reference custom styles (from the source style.css) ---- */
+
+.api-docs pre {
+  tab-size: 2;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+.api-docs pre::-webkit-scrollbar {
+  height: 6px;
+  width: 6px;
+}
+.api-docs pre::-webkit-scrollbar-track {
+  background: transparent;
+}
+.api-docs pre::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+}
+.api-docs pre::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+@media (max-width: 640px) {
+  .api-docs table {
+    display: block;
+    overflow-x: auto;
+  }
+}

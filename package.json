@@ -1,0 +1,26 @@
+{
+  "name": "supertext-order-api-documentation",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Standalone documentation site for the Supertext Order API, rendered from openapi.json.",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "next": "^15.5.4",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.2.4",
+    "@tailwindcss/typography": "^0.5.19",
+    "@types/node": "^22.10.0",
+    "@types/react": "^19.1.1",
+    "@types/react-dom": "^19.1.1",
+    "tailwindcss": "^4.2.4",
+    "typescript": "^5.7.2"
+  }
+}
