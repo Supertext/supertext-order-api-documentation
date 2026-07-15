@@ -3,11 +3,11 @@
 // Supertext CDN and inverted to white (as the live site does), and turn mint on hover.
 
 const LINKS = [
-  { href: 'https://www.supertext.com/de-CH/kontakt', label: 'Kontakt' },
-  { href: 'https://www.supertext.com/de-CH/faq', label: 'FAQ' },
-  { href: 'https://www.supertext.com/de-CH/impressum', label: 'Impressum' },
-  { href: 'https://www.supertext.com/de-CH/agb', label: 'AGB' },
-  { href: 'https://www.supertext.com/de-CH/datenschutz', label: 'Datenschutzerklärung' },
+  { href: 'https://www.supertext.com/en/contact', label: 'Contact' },
+  { href: 'https://www.supertext.com/en/faq', label: 'FAQ' },
+  { href: 'https://www.supertext.com/en/imprint', label: 'Legal notice' },
+  { href: 'https://www.supertext.com/en/gtc', label: 'T&C' },
+  { href: 'https://www.supertext.com/en/privacy', label: 'Privacy Policy' },
 ]
 
 const SOCIAL = [
