@@ -10,13 +10,18 @@ translation.
 > some operations; where both are available this document describes the Basic-auth
 > flow, which is what most integrations use.
 
+📖 **Browse the rendered reference:**
+**<https://supertext.github.io/supertext-order-api-documentation/>** — an interactive,
+three-pane API reference generated from `openapi.json`.
+
 **In this repository**
 
 | File | What it is |
 |------|------------|
 | `README.md` | This guide. |
-| `openapi.json` | Machine-readable OpenAPI 3.0 specification (import into Swagger UI, Postman, code generators, etc.). |
+| `openapi.json` | Machine-readable OpenAPI 3.0 specification (import into Swagger UI, Postman, code generators, etc.). It also drives the [rendered reference site](https://supertext.github.io/supertext-order-api-documentation/). |
 | `Supertext Order API 2026.postman_collection.json` | Ready-to-run Postman collection (credentials removed — see [Authentication](#authentication)). |
+| `app/` | Next.js source for the [rendered reference site](https://supertext.github.io/supertext-order-api-documentation/) (auto-deployed to GitHub Pages on push to `main`). |
 
 ---
 
