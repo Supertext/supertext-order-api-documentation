@@ -1,0 +1,468 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Supertext Order API",
+    "version": "1.1",
+    "description": "HTTP API for placing and managing professional (human) translation orders with Supertext: upload content, request a quote, create orders, receive a completion callback, and download the finished translation. Authentication is HTTP Basic (account email + Legacy API Key).",
+    "contact": {
+      "name": "Supertext",
+      "url": "https://www.supertext.com"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://{env}.supertext.com",
+      "description": "Supertext environment",
+      "variables": {
+        "env": {
+          "default": "www",
+          "enum": ["www", "staging", "testing"],
+          "description": "www = production, staging and testing = non-billed integration environments"
+        }
+      }
+    }
+  ],
+  "security": [{ "basicAuth": [] }],
+  "tags": [
+    { "name": "Account", "description": "Credential verification" },
+    { "name": "Files", "description": "Upload and download documents" },
+    { "name": "Orders", "description": "Quotes, orders, status and feedback" }
+  ],
+  "paths": {
+    "/api/v1/translation/accountcheck": {
+      "get": {
+        "tags": ["Account"],
+        "summary": "Verify credentials",
+        "operationId": "accountCheck",
+        "responses": {
+          "200": { "description": "Credentials are valid." },
+          "401": { "$ref": "#/components/responses/Unauthorized" }
+        }
+      }
+    },
+    "/api/v1/files/files": {
+      "post": {
+        "tags": ["Files"],
+        "summary": "Upload a document to translate",
+        "operationId": "uploadFile",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "required": ["ElementId", "ElementTypeId", "DocumentTypeId", "file"],
+                "properties": {
+                  "ElementId": { "type": "integer", "default": 0, "description": "0 = create a new element." },
+                  "ElementTypeId": { "type": "integer", "default": 2, "description": "2 = file element." },
+                  "DocumentTypeId": { "type": "integer", "default": 1, "description": "1 = original (source) document." },
+                  "file": { "type": "string", "format": "binary", "description": "The file to translate (use a real filename and content type, e.g. content.html / text/html)." }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The uploaded document object(s). Use the returned Id as the DocumentId in an order's Files array.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Document" }
+                },
+                "example": [ { "Id": 3538699, "Name": "content.html", "DocumentType": "Original" } ]
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" }
+        }
+      }
+    },
+    "/api/v1/files/files/{orderId}": {
+      "get": {
+        "tags": ["Files"],
+        "summary": "List files for an order",
+        "operationId": "getFilesForOrder",
+        "parameters": [ { "$ref": "#/components/parameters/OrderId" } ],
+        "responses": {
+          "200": {
+            "description": "Files associated with the order.",
+            "content": {
+              "application/json": {
+                "schema": { "type": "array", "items": { "$ref": "#/components/schemas/FileObject" } }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" }
+        }
+      }
+    },
+    "/api/v1/translation/quote": {
+      "post": {
+        "tags": ["Orders"],
+        "summary": "Get a quote",
+        "description": "Estimate price / word count without placing an order. Same body shape as create-order.",
+        "operationId": "getQuote",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/OrderRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "A quote." },
+          "401": { "$ref": "#/components/responses/Unauthorized" }
+        }
+      }
+    },
+    "/api/v1.1/translation/order": {
+      "post": {
+        "tags": ["Orders"],
+        "summary": "Create an order",
+        "description": "Place a translation order. Returns one order object per target language. If CallbackUrl is set, Supertext POSTs the completed order object(s) to it when finished.",
+        "operationId": "createOrder",
+        "parameters": [
+          {
+            "name": "suppressConfirmationEmail",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "boolean" },
+            "description": "Suppress the order confirmation email."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/OrderRequest" },
+              "example": {
+                "OrderTypeConfigurationId": 6,
+                "DeliveryId": 1,
+                "OrderName": "Homepage translation",
+                "SourceLang": "de",
+                "TargetLanguages": ["fr-CH", "en-US"],
+                "ContentType": "text/html",
+                "CallbackUrl": "https://yourdomain.com/supertext/callback",
+                "ReferenceData": "ticket-4711",
+                "Files": [ { "Id": 3538699, "Comment": "File to translate" } ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "One order object per target language.",
+            "content": {
+              "application/json": {
+                "schema": { "type": "array", "items": { "$ref": "#/components/schemas/OrderObject" } },
+                "example": [
+                  { "Id": 715113, "TargetLang": "fr-CH", "Status": "New", "ReferenceData": "ticket-4711" },
+                  { "Id": 715114, "TargetLang": "en-US", "Status": "New", "ReferenceData": "ticket-4711" }
+                ]
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" }
+        },
+        "callbacks": {
+          "orderCompleted": {
+            "{$request.body#/CallbackUrl}": {
+              "post": {
+                "summary": "Order completed notification",
+                "description": "Sent by Supertext when the order is completed. Body is the order object(s), including the Final file(s). Respond 2xx to acknowledge.",
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "oneOf": [
+                          { "$ref": "#/components/schemas/OrderObject" },
+                          { "type": "array", "items": { "$ref": "#/components/schemas/OrderObject" } }
+                        ]
+                      },
+                      "example": {
+                        "Id": 715113,
+                        "Status": "Completed",
+                        "ReferenceData": "ticket-4711",
+                        "SourceLang": "de",
+                        "TargetLang": "fr-CH",
+                        "Files": [
+                          { "Id": 8811, "Name": "content.html", "DocumentType": "Original", "ContentType": "text/html" },
+                          { "Id": 8812, "Name": "content.html", "DocumentType": "Final", "ContentType": "text/html" }
+                        ]
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "200": { "description": "Acknowledged." }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/order/{orderId}": {
+      "get": {
+        "tags": ["Orders"],
+        "summary": "Get an order",
+        "description": "Fetch a single order with its current status and files.",
+        "operationId": "getOrder",
+        "parameters": [ { "$ref": "#/components/parameters/OrderId" } ],
+        "responses": {
+          "200": {
+            "description": "The order.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/OrderObject" }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" }
+        }
+      }
+    },
+    "/api/v1/order/feedback": {
+      "post": {
+        "tags": ["Orders"],
+        "summary": "Provide feedback / reject an order",
+        "operationId": "provideFeedback",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/FeedbackRequest" },
+              "example": {
+                "OrderId": 168110,
+                "PostEditing": "true",
+                "Rating": 4,
+                "Comments": [ { "Comment": "Please keep the product name untranslated." } ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Feedback recorded." },
+          "401": { "$ref": "#/components/responses/Unauthorized" }
+        }
+      }
+    },
+    "/api/v1/order/status/{orderId}/{statusId}": {
+      "put": {
+        "tags": ["Orders"],
+        "summary": "Change an order's status",
+        "description": "Set an order's status. Commonly used to mark an order as Collected (statusId = 9).",
+        "operationId": "changeOrderStatus",
+        "parameters": [
+          { "$ref": "#/components/parameters/OrderId" },
+          {
+            "name": "statusId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" },
+            "description": "Target status id. 9 = Collected.",
+            "example": 9
+          }
+        ],
+        "responses": {
+          "200": { "description": "Status updated." },
+          "401": { "$ref": "#/components/responses/Unauthorized" }
+        }
+      }
+    },
+    "/api/v1/customer/orders/current/{pageSize}/{page}/{personId}": {
+      "get": {
+        "tags": ["Orders"],
+        "summary": "List the current person's orders",
+        "operationId": "listCurrentOrders",
+        "parameters": [
+          { "name": "pageSize", "in": "path", "required": true, "schema": { "type": "integer" }, "example": 50 },
+          { "name": "page", "in": "path", "required": true, "schema": { "type": "integer" }, "example": 1 },
+          { "name": "personId", "in": "path", "required": true, "schema": { "type": "integer" }, "example": 598 },
+          {
+            "name": "queryFilter[IgnoreOrderStatusIds][]",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "integer" },
+            "description": "Exclude orders with the given status id (repeatable).",
+            "example": 22
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A page of orders.",
+            "content": {
+              "application/json": {
+                "schema": { "type": "array", "items": { "$ref": "#/components/schemas/OrderObject" } }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" }
+        }
+      }
+    },
+    "/storage/file/{fileId}/{fileName}": {
+      "get": {
+        "tags": ["Files"],
+        "summary": "Download a file",
+        "description": "Download a document by id (e.g. the finished 'Final' file). Older integrations may use /filedownloads/file/{fileId}/{fileName}.",
+        "operationId": "downloadFile",
+        "parameters": [
+          { "name": "fileId", "in": "path", "required": true, "schema": { "type": "integer" }, "example": 1964676 },
+          { "name": "fileName", "in": "path", "required": true, "schema": { "type": "string" }, "example": "translation.html" }
+        ],
+        "responses": {
+          "200": {
+            "description": "The file contents.",
+            "content": {
+              "application/octet-stream": { "schema": { "type": "string", "format": "binary" } },
+              "text/html": { "schema": { "type": "string" } }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "basicAuth": {
+        "type": "http",
+        "scheme": "basic",
+        "description": "HTTP Basic: username = account email, password = Legacy API Key."
+      }
+    },
+    "parameters": {
+      "OrderId": {
+        "name": "orderId",
+        "in": "path",
+        "required": true,
+        "schema": { "type": "integer" },
+        "description": "Supertext order id.",
+        "example": 715113
+      }
+    },
+    "responses": {
+      "Unauthorized": {
+        "description": "Missing or invalid credentials.",
+        "content": {
+          "application/json": {
+            "schema": { "type": "object", "properties": { "Message": { "type": "string" } } }
+          }
+        }
+      }
+    },
+    "schemas": {
+      "OrderRequest": {
+        "type": "object",
+        "required": ["OrderTypeConfigurationId", "DeliveryId", "SourceLang", "TargetLanguages", "OrderName"],
+        "description": "Order (and quote) request. Provide content via exactly one of `Files` or `Groups`.",
+        "properties": {
+          "OrderTypeConfigurationId": { "type": "integer", "description": "Product / quality tier (account-specific).", "example": 6 },
+          "DeliveryId": { "type": "integer", "description": "Delivery speed. 1=Express, 2=24h, 3=48h, 4=3 days, 5=1 week.", "example": 1 },
+          "SourceLang": { "type": "string", "description": "Source language (2-letter or regional).", "example": "de" },
+          "TargetLanguages": { "type": "array", "items": { "type": "string" }, "description": "Target languages; one order is created per language.", "example": ["fr-CH", "en-US"] },
+          "OrderName": { "type": "string", "example": "Homepage translation" },
+          "ContentType": { "type": "string", "example": "text/html" },
+          "CallbackUrl": { "type": "string", "format": "uri", "description": "URL Supertext POSTs to on completion.", "example": "https://yourdomain.com/supertext/callback" },
+          "ReferenceData": { "type": "string", "description": "Opaque correlation string, echoed back in the callback.", "example": "ticket-4711" },
+          "AdditionalInformation": { "type": "string", "description": "Free-text instructions for the translator." },
+          "Currency": { "type": "string", "example": "chf" },
+          "Deadline": { "type": "string", "description": "ISO-8601 desired deadline.", "example": "2026-02-09T13:46:47.0000000" },
+          "ServiceTypeId": { "type": "integer", "description": "Legacy service type (quote); account-specific.", "example": 46 },
+          "Referrer": { "type": "string", "example": "X-System Integration" },
+          "SystemName": { "type": "string", "example": "WordPress" },
+          "SystemVersion": { "type": "string", "example": "6.7" },
+          "ComponentName": { "type": "string", "example": "supertext-polylang" },
+          "ComponentVersion": { "type": "string", "example": "1.0" },
+          "Links": { "type": "array", "items": { "$ref": "#/components/schemas/Link" } },
+          "Files": { "type": "array", "items": { "$ref": "#/components/schemas/FileRef" }, "description": "Reference previously uploaded documents." },
+          "Groups": { "type": "array", "items": { "$ref": "#/components/schemas/Group" }, "description": "Inline content." }
+        }
+      },
+      "FileRef": {
+        "type": "object",
+        "required": ["Id"],
+        "properties": {
+          "Id": { "type": "integer", "description": "DocumentId returned by the upload endpoint.", "example": 3538699 },
+          "Comment": { "type": "string", "nullable": true }
+        }
+      },
+      "Group": {
+        "type": "object",
+        "properties": {
+          "GroupId": { "type": "string", "example": "Group1" },
+          "Context": { "type": "string", "nullable": true, "example": "Some Node" },
+          "Items": { "type": "array", "items": { "$ref": "#/components/schemas/GroupItem" } }
+        }
+      },
+      "GroupItem": {
+        "type": "object",
+        "required": ["Id", "Content"],
+        "properties": {
+          "Id": { "type": "string", "description": "Your identifier for the string (returned unchanged).", "example": "1" },
+          "Content": { "type": "string", "description": "Text/HTML to translate.", "example": "<div>Hello</div>" },
+          "Comment": { "type": "string", "nullable": true },
+          "Context": { "type": "string", "nullable": true }
+        }
+      },
+      "Link": {
+        "type": "object",
+        "properties": {
+          "Url": { "type": "string", "format": "uri", "example": "http://en.wikipedia.org/wiki/Amalfi_Cathedral" },
+          "Comment": { "type": "string", "example": "Background to the text" }
+        }
+      },
+      "OrderObject": {
+        "type": "object",
+        "description": "An order. One is created per target language.",
+        "properties": {
+          "Id": { "type": "integer", "description": "OrderId.", "example": 715113 },
+          "Status": { "type": "string", "description": "Textual status, e.g. New, In progress, Quality check, Completed.", "example": "Completed" },
+          "SourceLang": { "type": "string", "example": "de" },
+          "TargetLang": { "type": "string", "example": "fr-CH" },
+          "OrderName": { "type": "string", "example": "Homepage translation" },
+          "ReferenceData": { "type": "string", "example": "ticket-4711" },
+          "Files": { "type": "array", "items": { "$ref": "#/components/schemas/FileObject" } }
+        }
+      },
+      "FileObject": {
+        "type": "object",
+        "properties": {
+          "Id": { "type": "integer", "example": 8812 },
+          "Name": { "type": "string", "example": "content.html" },
+          "DocumentType": { "type": "string", "enum": ["Original", "Final"], "description": "Final = the finished translation to download.", "example": "Final" },
+          "ContentType": { "type": "string", "example": "text/html" }
+        }
+      },
+      "Document": {
+        "type": "object",
+        "properties": {
+          "Id": { "type": "integer", "description": "DocumentId.", "example": 3538699 },
+          "Name": { "type": "string", "example": "content.html" },
+          "DocumentType": { "type": "string", "enum": ["Original", "Final"], "example": "Original" }
+        }
+      },
+      "FeedbackRequest": {
+        "type": "object",
+        "required": ["OrderId"],
+        "properties": {
+          "OrderId": { "type": "integer", "example": 168110 },
+          "PostEditing": { "type": "string", "example": "true" },
+          "Rating": { "type": "integer", "minimum": 1, "maximum": 5, "example": 4 },
+          "Comments": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": { "Comment": { "type": "string" } }
+            }
+          }
+        }
+      }
+    }
+  }
+}

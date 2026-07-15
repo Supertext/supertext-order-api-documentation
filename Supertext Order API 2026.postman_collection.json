@@ -1,0 +1,550 @@
+{
+  "info": {
+    "_postman_id": "d3c4a3c9-0ecf-428d-a428-61b220d45216",
+    "name": "Supertext Order API 2026",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "5610"
+  },
+  "item": [
+    {
+      "name": "Get a Quote (Content inside JSON)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json; charset=UTF-8"
+          },
+          {
+            "key": "Accept-Language",
+            "value": "de-DE"
+          },
+          {
+            "key": "",
+            "value": "",
+            "disabled": true
+          },
+          {
+            "key": "Authorization",
+            "value": ""
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"CallbackUrl\":\"http://localhost:65346/API/ApiCallbackExample.aspx\",\n  \"ContentType\":\"text\\/html\",\n  \"Currency\":\"chf\",\n  \"Deadline\":\"2012-02-09T13:46:47.0000000\",\n  \"DeliveryId\":2,\n  \"OrderName\":\"Some title\",\n  \"AdditionalInformation\":\"Test mit Hochkommas \\\" ' \",\n  \"ServiceTypeId\":46,\n  \"Referrer\":\"Test installation\",\n  \"SourceLang\":\"de-CH\",\n  \"TargetLanguages\":[\"fr-ch\", \"en-us\"],  \n  \"Links\":\n  [\n    {\n      \"Url\":\"http://en.wikipedia.org/wiki/Amalfi_Cathedral\",\n      \"Comment\":\"Background to the text\"\n     }\n   ],\n \"Groups\":\n  [\n    {\n      \"Context\":\"Some Node\",\n      \"GroupId\":\"Group1\",\n      \"Items\":\n      [\n        {\n          \"Comment\":null,\n          \"Content\":\"\\u003cdiv\\u003e This is the content of group 1\\u003c\\/div\\u003e\",\n          \"Context\":null,\n          \"Id\":\"1\"\n        },\n        {\n          \"Comment\":null,\n          \"Content\":\"This is \\u003ci\\u003e new \\u003c\\/i\\u003e content  of group 1\",\n          \"Context\":null,\n          \"Id\":\"2\"\n        }\n      ]\n    },\n    {\n      \"Context\":\"Some other Node\",\n      \"GroupId\":\"Group2\",\n      \"Items\":\n      [\n        {\n          \"Comment\":null,\n          \"Content\":\"\\u003cdiv\\u003e This is the content  of group 2 \\u003c\\/div\\u003e\",\n          \"Context\":null,\n          \"Id\":\"1\"\n        },\n        {\n          \"Comment\":null,\n          \"Content\":\"This is \\u003ci\\u003e new \\u003c\\/i\\u003e content  of group 2\",\n          \"Context\":null,\n          \"Id\":\"2\"\n        }\n      ]\n    }\n  ]\n}\n"
+        },
+        "url": {
+          "raw": "https://staging.supertext.com/api/v1/translation/quote",
+          "protocol": "https",
+          "host": [
+            "staging",
+            "supertext",
+            "com"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "translation",
+            "quote"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get a Quote (Content in a file)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": ""
+          },
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json; charset=UTF-8"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"CallbackUrl\":\"http://localhost:65346/API/ApiCallbackExample.aspx\",\n  \"ContentType\":\"text\\/html\",\n  \"Currency\":\"chf\",\n  \"Deadline\":\"2012-02-09T13:46:47.0000000\",\n  \"OrderName\":\"Some title\",\n  \"AdditionalInformation\":\"Test mit Hochkommas \\\" ' \",\n  \"ServiceTypeId\":46,\n  \"Referrer\":\"Test installation\",\n  \"SourceLang\":\"de-CH\",\n  \"TargetLanguages\":[\"fr-ch\", \"en-us\"],  \n  \"Links\":\n  [\n    {\n      \"Url\":\"http://en.wikipedia.org/wiki/Amalfi_Cathedral\",\n      \"Comment\":\"Background to the text\"\n     }\n   ],\n   \"Files\":\n  [\n    {\n      \"ID\": 380995,\n      \"Comment\":\"The main story with 585 words\"\n     }\n   ]\n}\n"
+        },
+        "url": {
+          "raw": "https://staging.supertext.com/api/v1/translation/quote",
+          "protocol": "https",
+          "host": [
+            "staging",
+            "supertext",
+            "com"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "translation",
+            "quote"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Create an order (Content inside JSON)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": ""
+          },
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json; charset=UTF-8"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"DeliveryId\": 1,\n    \"OrderName\": \"AG Test Order for Example Company X\",\n    \"OrderTypeConfigurationId\": 6,\n    \"Referrer\": \"X-System Integration\",\n    \"SystemName\": \"X-System 123 \",\n    \"SystemVersion\": \"0.1\",\n    \"ComponentName\": \"integration-system\",\n    \"ComponentVersion\": \"1.0\",\n    \"SourceLang\": \"de\",\n    \"TargetLanguages\": [\n                    \"fr-CH\",\n                    \"en-US\"\n    ],\n    \"ReferenceData\": \"Ticket ID\",\n    \"CallbackUrl\": \"http://yourdomain.com/API/ApiCAllbackExample\",\n    \"Links\":\n    [\n        {\n        \"Url\":\"http://en.wikipedia.org/wiki/Amalfi_Cathedral\",\n        \"Comment\":\"Background to the text\"\n        }\n    ],\n    \"Groups\":\n    [\n    {\n      \"Context\":\"Some Node\",\n      \"GroupId\":\"Group1\",\n      \"Items\":\n      [\n        {\n          \"Comment\":null,\n          \"Content\":\"\\u003cdiv\\u003e This is the content of group 1\\u003c\\/div\\u003e\",\n          \"Context\":null,\n          \"Id\":\"1\"\n        },\n        {\n          \"Comment\":null,\n          \"Content\":\"This is \\u003ci\\u003e new \\u003c\\/i\\u003e content  of group 1\",\n          \"Context\":null,\n          \"Id\":\"2\"\n        }\n      ]\n    },\n    {\n      \"Context\":\"Some other Node\",\n      \"GroupId\":\"Group2\",\n      \"Items\":\n      [\n        {\n          \"Comment\":null,\n          \"Content\":\"\\u003cdiv\\u003e This is the content  of group 2 \\u003c\\/div\\u003e\",\n          \"Context\":null,\n          \"Id\":\"1\"\n        },\n        {\n          \"Comment\":null,\n          \"Content\":\"This is \\u003ci\\u003e new \\u003c\\/i\\u003e content  of group 2\",\n          \"Context\":null,\n          \"Id\":\"2\"\n        }\n      ]\n    }\n  ]\n}\n\n"
+        },
+        "url": {
+          "raw": "https://staging.supertext.com/api/v1.1/translation/order",
+          "protocol": "https",
+          "host": [
+            "staging",
+            "supertext",
+            "com"
+          ],
+          "path": [
+            "api",
+            "v1.1",
+            "translation",
+            "order"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Create an order (Content in a file)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json; charset=UTF-8"
+          },
+          {
+            "key": "Authorization",
+            "value": ""
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"DeliveryId\": 1,\r\n    \"OrderName\": \"AG Test Order for Example Company X\",\r\n    \"OrderTypeConfigurationId\": 6,\r\n    \"Referrer\": \"X-System Integration\",\r\n    \"SystemName\": \"X-System 123 \",\r\n    \"SystemVersion\": \"0.1\",\r\n    \"ComponentName\": \"integration-system\",\r\n    \"ComponentVersion\": \"1.0\",\r\n    \"SourceLang\": \"de\",\r\n    \"TargetLanguages\": [\r\n                    \"fr-CH\",\r\n                    \"en-US\"\r\n    ],\r\n    \"ReferenceData\": \"Ticket ID\",\r\n    \"CallbackUrl\": \"http://yourdomain.com/API/ApiCAllbackExample\",\r\n    \"Links\":\r\n    [\r\n        {\r\n        \"Url\":\"http://en.wikipedia.org/wiki/Amalfi_Cathedral\",\r\n        \"Comment\":\"Background to the text\"\r\n        }\r\n    ],\r\n    \"Files\": [\r\n        {\r\n            \"Comment\": \"File you have to translate\",\r\n            \"Id\": 3538699\r\n        }\r\n    ]}"
+        },
+        "url": {
+          "raw": "https://staging.supertext.com/api/v1.1/translation/order",
+          "protocol": "https",
+          "host": [
+            "staging",
+            "supertext",
+            "com"
+          ],
+          "path": [
+            "api",
+            "v1.1",
+            "translation",
+            "order"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Post a file (Upload)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": ""
+          },
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "ElementId",
+              "value": "0",
+              "type": "text"
+            },
+            {
+              "key": "ElementTypeId",
+              "value": "2",
+              "type": "text"
+            },
+            {
+              "key": "DocumentTypeId",
+              "value": "1",
+              "type": "text"
+            },
+            {
+              "key": "file",
+              "type": "file",
+              "src": "/path/to/your/content.html"
+            }
+          ]
+        },
+        "url": {
+          "raw": "https://staging.supertext.ch/api/v1/files/files",
+          "protocol": "https",
+          "host": [
+            "staging",
+            "supertext",
+            "ch"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "files",
+            "files"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get all files for one order",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": ""
+          },
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json; charset=UTF-8"
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": []
+        },
+        "url": {
+          "raw": "http://staging.supertext.ch/api/v1/files/files/39639",
+          "protocol": "http",
+          "host": [
+            "staging",
+            "supertext",
+            "ch"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "files",
+            "files",
+            "39639"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Provide feedback (Reject order)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": ""
+          },
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json; charset=UTF-8"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"OrderId\":168110,\n  \"PostEditing\":\"true\",\n  \"Rating\":4,\n  \"Comments\":\n  [\n    {\n      \"Comment\":\"Background to the text\"\n     }\n   ]\n}\n"
+        },
+        "url": {
+          "raw": "https://staging.supertext.ch/api/v1/order/feedback",
+          "protocol": "https",
+          "host": [
+            "staging",
+            "supertext",
+            "ch"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "order",
+            "feedback"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Account Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": []
+        },
+        "url": {
+          "raw": "https://staging.supertext.ch/api/v1/translation/accountcheck",
+          "protocol": "https",
+          "host": [
+            "staging",
+            "supertext",
+            "ch"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "translation",
+            "accountcheck"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get order with files by order id",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": ""
+          },
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json; charset=UTF-8"
+          }
+        ],
+        "url": {
+          "raw": "https://staging.supertext.com/api/v1/order/152457",
+          "protocol": "https",
+          "host": [
+            "staging",
+            "supertext",
+            "com"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "order",
+            "152457"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Download file",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": ""
+          },
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json; charset=UTF-8"
+          }
+        ],
+        "url": {
+          "raw": "https://staging.supertext.ch/filedownloads/file/1964676/OrderProcess_Files.png",
+          "protocol": "https",
+          "host": [
+            "staging",
+            "supertext",
+            "ch"
+          ],
+          "path": [
+            "filedownloads",
+            "file",
+            "1964676",
+            "OrderProcess_Files.png"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get all Orders from the current person",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": ""
+          },
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json; charset=UTF-8"
+          },
+          {
+            "key": "Accept-Language",
+            "value": "de-CH"
+          }
+        ],
+        "url": {
+          "raw": "https://staging.supertext.ch/api/v1/customer/orders/current/50/1/598?queryFilter%5BIgnoreOrderStatusIds%5D%5B%5D=22",
+          "protocol": "https",
+          "host": [
+            "staging",
+            "supertext",
+            "ch"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "customer",
+            "orders",
+            "current",
+            "50",
+            "1",
+            "598"
+          ],
+          "query": [
+            {
+              "key": "queryFilter%5BIgnoreOrderStatusIds%5D%5B%5D",
+              "value": "22"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Change order status to collected (9)",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": ""
+          },
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json; charset=UTF-8"
+          }
+        ],
+        "url": {
+          "raw": "https://{{env_sub}}.supertext.ch/api/v1/order/status/673198/9",
+          "protocol": "https",
+          "host": [
+            "{{env_sub}}",
+            "supertext",
+            "ch"
+          ],
+          "path": [
+            "api",
+            "v1",
+            "order",
+            "status",
+            "673198",
+            "9"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "auth": {
+    "type": "basic",
+    "basic": [
+      { "key": "username", "value": "{{email}}", "type": "string" },
+      { "key": "password", "value": "{{apiKey}}", "type": "string" }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "env_sub",
+      "value": "staging",
+      "type": "string"
+    },
+    {
+      "key": "email",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "apiKey",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}
