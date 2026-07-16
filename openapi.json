@@ -94,18 +94,49 @@
       "post": {
         "tags": ["Orders"],
         "summary": "Get a quote",
-        "description": "Estimate price / word count without placing an order. Same body shape as create-order.",
+        "description": "Returns the word count, price, and available delivery options (with prices and delivery dates) for the given content, without placing an order. Upload the content first and reference it via Files (or send it inline via Groups). Select the product with OrderTypeConfigurationId + OrderTypeId.",
         "operationId": "getQuote",
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/OrderRequest" }
+              "schema": { "$ref": "#/components/schemas/OrderRequest" },
+              "example": {
+                "OrderTypeConfigurationId": 167,
+                "OrderTypeId": 55,
+                "SourceLang": "de-CH",
+                "TargetLanguages": ["fr-CH", "en-US"],
+                "Files": [ { "Id": 380995, "Comment": "The main story" } ]
+              }
             }
           }
         },
         "responses": {
-          "200": { "description": "A quote." },
+          "200": {
+            "description": "The quote: word count, currency, and one Options entry per product with its delivery options.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/QuoteResponse" },
+                "example": {
+                  "Currency": "CHF",
+                  "CurrencySymbol": "CHF",
+                  "WordCount": 28,
+                  "Options": [
+                    {
+                      "Name": "Übersetzung PREMIUM",
+                      "OrderTypeConfigurationId": 167,
+                      "OrderTypeId": 55,
+                      "ShortDescription": "For demanding content where every word counts",
+                      "DeliveryOptions": [
+                        { "DeliveryId": 1, "Name": "Express", "Price": 90.0, "HourlyRate": null, "DeliveryDate": "2026-07-16T10:26:36Z", "IsDefaultDeliveryOption": false }
+                      ]
+                    }
+                  ],
+                  "AccountValid": true
+                }
+              }
+            }
+          },
           "401": { "$ref": "#/components/responses/Unauthorized" }
         }
       }
@@ -351,11 +382,12 @@
     "schemas": {
       "OrderRequest": {
         "type": "object",
-        "required": ["OrderTypeConfigurationId", "DeliveryId", "SourceLang", "TargetLanguages", "OrderName"],
-        "description": "Order (and quote) request. Provide content via exactly one of `Files` or `Groups`.",
+        "required": ["OrderTypeConfigurationId", "SourceLang", "TargetLanguages"],
+        "description": "Order (and quote) request. Provide content via exactly one of `Files` or `Groups`. An order additionally requires `DeliveryId` and `OrderName`; a quote additionally uses `OrderTypeId`.",
         "properties": {
           "OrderTypeConfigurationId": { "type": "integer", "description": "Product / quality tier (account-specific).", "example": 6 },
-          "DeliveryId": { "type": "integer", "description": "Delivery speed. 1=Express, 2=24h, 3=48h, 4=3 days, 5=1 week.", "example": 1 },
+          "OrderTypeId": { "type": "integer", "description": "Matching product type id, used together with OrderTypeConfigurationId when requesting a quote (account-specific).", "example": 55 },
+          "DeliveryId": { "type": "integer", "description": "Delivery speed. 1=Express, 2=24h, 3=48h, 4=3 days, 5=1 week. Required for an order; omit for a quote (a quote returns the available delivery options).", "example": 1 },
           "SourceLang": { "type": "string", "description": "Source language (2-letter or regional).", "example": "de" },
           "TargetLanguages": { "type": "array", "items": { "type": "string" }, "description": "Target languages; one order is created per language.", "example": ["fr-CH", "en-US"] },
           "OrderName": { "type": "string", "example": "Homepage translation" },
@@ -453,6 +485,47 @@
               "properties": { "Comment": { "type": "string" } }
             }
           }
+        }
+      },
+      "QuoteResponse": {
+        "type": "object",
+        "description": "Result of a quote request.",
+        "properties": {
+          "Currency": { "type": "string", "description": "Currency of the quoted prices (the account currency).", "example": "CHF" },
+          "CurrencySymbol": { "type": "string", "example": "CHF" },
+          "WordCount": { "type": "integer", "description": "Authoritative source word count for the submitted content.", "example": 28 },
+          "AccountValid": { "type": "boolean", "description": "false when the request was unauthenticated / the account can't order.", "example": true },
+          "Options": {
+            "type": "array",
+            "description": "One entry per requested product (OrderTypeConfigurationId).",
+            "items": { "$ref": "#/components/schemas/QuoteOption" }
+          }
+        }
+      },
+      "QuoteOption": {
+        "type": "object",
+        "properties": {
+          "Name": { "type": "string", "example": "Übersetzung PREMIUM" },
+          "OrderTypeConfigurationId": { "type": "integer", "example": 167 },
+          "OrderTypeId": { "type": "integer", "example": 55 },
+          "ShortDescription": { "type": "string", "example": "For demanding content where every word counts" },
+          "Description": { "type": "string" },
+          "DeliveryOptions": {
+            "type": "array",
+            "description": "Available delivery speeds for this product + language pair. Not every language pair offers the same set — build delivery choices from this list.",
+            "items": { "$ref": "#/components/schemas/DeliveryOption" }
+          }
+        }
+      },
+      "DeliveryOption": {
+        "type": "object",
+        "properties": {
+          "DeliveryId": { "type": "integer", "description": "1=Express, 2=24h, 3=48h, 4=3 days, 5=1 week.", "example": 1 },
+          "Name": { "type": "string", "example": "Express" },
+          "Price": { "type": "number", "format": "float", "example": 90.0 },
+          "HourlyRate": { "type": "number", "format": "float", "nullable": true },
+          "DeliveryDate": { "type": "string", "format": "date-time", "example": "2026-07-16T10:26:36Z" },
+          "IsDefaultDeliveryOption": { "type": "boolean", "example": false }
         }
       }
     }

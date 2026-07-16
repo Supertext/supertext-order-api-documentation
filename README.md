@@ -202,25 +202,75 @@ curl -u "$EMAIL:$KEY" \
 
 ### Get a quote
 
-Get an estimated price / word count without placing an order. Same body shape as
-*create an order* (content via `Groups` or `Files`).
+Get the **word count**, **price**, and available **delivery options** (with their
+prices and delivery dates) for a piece of content, without placing an order. Upload the
+content first (see [Upload a file](#upload-a-file)) and reference it via `Files` — exactly
+as you would for an order.
 
 ```
 POST /api/v1/translation/quote
 ```
 
+**Request** — select the product with `OrderTypeConfigurationId` **and** its
+`OrderTypeId` (see [Reference values](#reference-values)):
+
 ```jsonc
 {
-  "ContentType": "text/html",
-  "Currency": "chf",
-  "DeliveryId": 2,
-  "OrderName": "Some title",
-  "ServiceTypeId": 46,
+  "OrderTypeConfigurationId": 167,
+  "OrderTypeId": 55,
   "SourceLang": "de-CH",
   "TargetLanguages": ["fr-CH", "en-US"],
-  "Files": [ { "Id": 3538699, "Comment": "The main story" } ]
+  "Files": [ { "Id": 380995, "Comment": "The main story" } ]
+  // "Currency": "chf"   // optional — defaults to the account currency
 }
 ```
+
+> The content can be sent inline via `Groups` instead of `Files` (same as an order).
+> An older form of this call selects the product with `ServiceTypeId` — see
+> [`ServiceTypeId`](#servicetypeid).
+
+**Response** — the word count, currency, and one entry in `Options` per requested
+product, each listing its `DeliveryOptions` with price + delivery date:
+
+```jsonc
+{
+  "Currency": "CHF",
+  "CurrencySymbol": "CHF",
+  "WordCount": 28,
+  "Options": [
+    {
+      "Name": "Übersetzung PREMIUM",
+      "OrderTypeConfigurationId": 167,
+      "OrderTypeId": 55,
+      "ShortDescription": "For demanding content where every word counts",
+      "Description": "Specialised translation incl. revision by a second translator…",
+      "DeliveryOptions": [
+        {
+          "DeliveryId": 1,
+          "Name": "Express",
+          "Price": 90.0,
+          "HourlyRate": null,
+          "DeliveryDate": "2026-07-16T10:26:36Z",
+          "IsDefaultDeliveryOption": false
+        }
+        // … one per available delivery speed
+      ]
+    }
+  ],
+  "AccountValid": true
+}
+```
+
+| Field | Description |
+|-------|-------------|
+| `WordCount` | Authoritative source word count for the submitted content. |
+| `Currency` / `CurrencySymbol` | Currency of the quoted prices (the account's currency). |
+| `Options[]` | One per requested product (`OrderTypeConfigurationId`). |
+| `Options[].DeliveryOptions[]` | Available delivery speeds with `Price`, `DeliveryDate`, `DeliveryId`, and `IsDefaultDeliveryOption`. |
+| `AccountValid` | `false` when the request was unauthenticated / the account can't order. |
+
+> **Not every language pair offers the same delivery options** — always build your
+> delivery choices from `DeliveryOptions` in the quote rather than assuming a fixed set.
 
 ---
 
@@ -475,13 +525,17 @@ the translated side so you can map translations onto your original structure.
 | 4 | 3 days |
 | 5 | 1 week |
 
-### `OrderTypeConfigurationId` (example values)
+### `OrderTypeConfigurationId` / `OrderTypeId` (example values)
 
-| Id | Product |
-|----|---------|
-| 166 | Translation BASIC |
-| 167 | Translation PREMIUM |
-| 168 | Translation CREATIVE |
+Each product is identified by an `OrderTypeConfigurationId` (used to create an order) and
+a matching `OrderTypeId` (used, together with it, to request a [quote](#get-a-quote)). Both
+are returned in each quote's `Options[]`.
+
+| OrderTypeConfigurationId | OrderTypeId | Product |
+|----|----|---------|
+| 166 | 54 | Translation BASIC |
+| 167 | 55 | Translation PREMIUM |
+| 168 | 56 | Translation CREATIVE |
 
 *(Other accounts may use different ids — e.g. `6` appears in the sample requests.)*
 
