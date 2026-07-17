@@ -5,10 +5,10 @@ manage **professional (human) translation orders** with Supertext, upload the
 content to translate, receive a completion callback, and download the finished
 translation.
 
-> This is the API also referred to as the **Legacy API** (Basic-auth order
-> endpoints under `/api/v1` and `/api/v1.1`). A newer OAuth2-based API exists for
-> some operations; where both are available this document describes the Basic-auth
-> flow, which is what most integrations use.
+> The Order API uses HTTP Basic authentication and lives under `/api/v1` and
+> `/api/v1.1`. A newer OAuth2-based API exists for some operations; where both are
+> available this document describes the Basic-auth flow, which is what most
+> integrations use.
 
 📖 **Browse the rendered reference:**
 **<https://supertext.github.io/supertext-order-api-documentation/>** — an interactive,
@@ -93,12 +93,12 @@ All endpoint paths in this document are **relative to the environment base URL**
 The Order API uses **HTTP Basic authentication**:
 
 - **username** = your Supertext **account email**
-- **password** = your **Legacy API Key** (found in your Supertext account settings)
+- **password** = your **Order API Key** (found in your Supertext account settings)
 
 Send it on every request as an `Authorization` header:
 
 ```
-Authorization: Basic BASE64( "email:legacyApiKey" )
+Authorization: Basic BASE64( "email:orderApiKey" )
 ```
 
 For example, `jane@example.com:my-api-key` becomes:
@@ -510,7 +510,7 @@ the translated side so you can map translations onto your original structure.
 
 ## Reference values
 
-> ⚠️ **Product ids are account-specific.** `OrderTypeConfigurationId` (and legacy
+> ⚠️ **Product ids are account-specific.** `OrderTypeConfigurationId` (and the older
 > `ServiceTypeId`) values depend on the products configured for your account. The
 > values below are examples/known values — confirm yours with Supertext or via a
 > quote. `DeliveryId` and the upload constants are stable.
@@ -541,7 +541,7 @@ are returned in each quote's `Options[]`.
 
 ### `ServiceTypeId`
 
-Legacy service-type selector used by the **[quote](#get-a-quote)** endpoint
+An older service-type selector used by the **[quote](#get-a-quote)** endpoint
 (`POST /api/v1/translation/quote`). Like `OrderTypeConfigurationId`, its values are
 **account-specific**. When creating an order you use `OrderTypeConfigurationId` instead —
 `ServiceTypeId` is not required on the order endpoint.

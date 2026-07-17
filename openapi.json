@@ -3,7 +3,7 @@
   "info": {
     "title": "Supertext Order API",
     "version": "1.1",
-    "description": "The Supertext Order API lets you place and manage **professional (human) translation** orders: upload content, request a quote, create orders, receive a completion callback, and download the finished translation.\n\nThis is the Basic-auth **Order API** (also called the Legacy API). All endpoint paths are relative to the environment base URL.\n\n## Authentication\n\nThe Order API uses **HTTP Basic authentication**:\n\n- **username** = your Supertext account email\n- **password** = your **Legacy API Key** (from your Supertext account settings)\n\nSend it on every request as an `Authorization` header:\n\n    Authorization: Basic BASE64(\"email:legacyApiKey\")\n\n## Environments\n\nAll environments live under `supertext.com`:\n\n- **Production (live)** — `https://www.supertext.com`\n- **Staging** — `https://staging.supertext.com`\n- **Testing** — `https://testing.supertext.com`\n\nUse Staging or Testing for integration work; those orders are not billed and not translated by humans.\n\n## Order flow\n\n1. (optional) Verify credentials with **Account check**.\n2. Upload the content with **Upload a file** to get a DocumentId (or send it inline).\n3. Create the order(s) with **Create an order** — one order per target language.\n4. Supertext POSTs the completed order(s) to your **CallbackUrl** when finished.\n5. Download the **Final** file(s).\n\n## Order types & delivery\n\n`OrderTypeConfigurationId` selects the product/quality tier and is **account-specific** (e.g. 166 BASIC, 167 PREMIUM, 168 CREATIVE). `DeliveryId` selects speed: 1 = Express, 2 = 24h, 3 = 48h, 4 = 3 days, 5 = 1 week.",
+    "description": "The Supertext Order API lets you place and manage **professional (human) translation** orders: upload content, request a quote, create orders, receive a completion callback, and download the finished translation.\n\nThis is the Basic-auth **Order API**. All endpoint paths are relative to the environment base URL.\n\n## Authentication\n\nThe Order API uses **HTTP Basic authentication**:\n\n- **username** = your Supertext account email\n- **password** = your **Order API Key** (from your Supertext account settings)\n\nSend it on every request as an `Authorization` header:\n\n    Authorization: Basic BASE64(\"email:orderApiKey\")\n\n## Environments\n\nAll environments live under `supertext.com`:\n\n- **Production (live)** — `https://www.supertext.com`\n- **Staging** — `https://staging.supertext.com`\n- **Testing** — `https://testing.supertext.com`\n\nUse Staging or Testing for integration work; those orders are not billed and not translated by humans.\n\n## Order flow\n\n1. (optional) Verify credentials with **Account check**.\n2. Upload the content with **Upload a file** to get a DocumentId (or send it inline).\n3. Create the order(s) with **Create an order** — one order per target language.\n4. Supertext POSTs the completed order(s) to your **CallbackUrl** when finished.\n5. Download the **Final** file(s).\n\n## Order types & delivery\n\n`OrderTypeConfigurationId` selects the product/quality tier and is **account-specific** (e.g. 166 BASIC, 167 PREMIUM, 168 CREATIVE). `DeliveryId` selects speed: 1 = Express, 2 = 24h, 3 = 48h, 4 = 3 days, 5 = 1 week.",
     "contact": {
       "name": "Supertext",
       "url": "https://www.supertext.com"
@@ -356,7 +356,7 @@
       "basicAuth": {
         "type": "http",
         "scheme": "basic",
-        "description": "HTTP Basic: username = account email, password = Legacy API Key."
+        "description": "HTTP Basic: username = account email, password = Order API Key."
       }
     },
     "parameters": {
@@ -397,7 +397,7 @@
           "AdditionalInformation": { "type": "string", "description": "Free-text instructions for the translator." },
           "Currency": { "type": "string", "example": "chf" },
           "Deadline": { "type": "string", "description": "ISO-8601 desired deadline.", "example": "2026-02-09T13:46:47.0000000" },
-          "ServiceTypeId": { "type": "integer", "description": "Legacy service type (quote); account-specific.", "example": 46 },
+          "ServiceTypeId": { "type": "integer", "description": "Older service type (quote); account-specific.", "example": 46 },
           "Referrer": { "type": "string", "example": "X-System Integration" },
           "SystemName": { "type": "string", "example": "WordPress" },
           "SystemVersion": { "type": "string", "example": "6.7" },
