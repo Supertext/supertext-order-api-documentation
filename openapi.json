@@ -47,8 +47,8 @@
                 "properties": {
                   "ElementId": { "type": "integer", "default": 0, "description": "0 = create a new element." },
                   "ElementTypeId": { "type": "integer", "default": 2, "description": "2 = file element." },
-                  "DocumentTypeId": { "type": "integer", "default": 1, "description": "1 = original (source) document." },
-                  "file": { "type": "string", "format": "binary", "description": "The file to translate (use a real filename and content type, e.g. content.html / text/html)." }
+                  "DocumentTypeId": { "type": "integer", "default": 1, "enum": [1, 3], "description": "1 = original (source) document to translate; 3 = reference file (e.g. a screenshot) attached for the translator's context, not translated." },
+                  "file": { "type": "string", "format": "binary", "description": "The file (use a real filename and content type, e.g. content.html / text/html, or screenshot.png / image/png)." }
                 }
               }
             }
@@ -468,7 +468,7 @@
         "properties": {
           "Id": { "type": "integer", "description": "DocumentId.", "example": 3538699 },
           "Name": { "type": "string", "example": "content.html" },
-          "DocumentType": { "type": "string", "enum": ["Original", "Final"], "example": "Original" }
+          "DocumentType": { "type": "string", "enum": ["Original", "Final", "Reference"], "description": "Reference = supporting material (e.g. a screenshot) for the translator; not translated.", "example": "Original" }
         }
       },
       "FeedbackRequest": {

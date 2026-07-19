@@ -179,8 +179,8 @@ Content-Type: multipart/form-data
 |-------|-------|---------|
 | `ElementId` | `0` | New element. |
 | `ElementTypeId` | `2` | File element. |
-| `DocumentTypeId` | `1` | Original (source) document. |
-| `file` | *(binary)* | The file. Use a real filename and content type (e.g. `content.html`, `text/html`). |
+| `DocumentTypeId` | `1` | Document type — `1` for the original (source) document to translate, `3` for a reference file (e.g. a screenshot) that gives the translator visual context but is not itself translated. |
+| `file` | *(binary)* | The file. Use a real filename and content type (e.g. `content.html`, `text/html`, or `screenshot.png`, `image/png`). |
 
 ```bash
 curl -u "$EMAIL:$KEY" \
@@ -559,7 +559,7 @@ An older service-type selector used by the **[quote](#get-a-quote)** endpoint
 |-------|-------|---------|
 | `ElementId` | `0` | New element |
 | `ElementTypeId` | `2` | File |
-| `DocumentTypeId` | `1` | Original document |
+| `DocumentTypeId` | `1` | Document type — `1` = original document to translate, `3` = reference file (e.g. screenshot) |
 
 ### `DocumentType` (in responses)
 
@@ -567,6 +567,7 @@ An older service-type selector used by the **[quote](#get-a-quote)** endpoint
 |----|-------|---------|
 | 1 | `Original` | The source document you supplied. |
 | 2 | `Final` | The finished translation to download. |
+| 3 | `Reference` | Supporting material (e.g. a screenshot) attached for the translator's context; not translated. |
 
 ### Order status (partial)
 
